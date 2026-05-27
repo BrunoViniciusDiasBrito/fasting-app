@@ -3,22 +3,23 @@
 > Atualizado em: 2026-05-27
 
 ## Progresso geral
-- **20% concluído** (estrutura base + modelagem de dados expandida + plano de execução).
-- **80% restante** para chegar ao escopo completo solicitado.
+- **30% concluído**.
+- **70% restante** para chegar ao escopo completo solicitado.
 
 ## Concluído
 - Monorepo com apps mobile/backend, CI inicial e setup local.
 - Estrutura FSD (mobile) e FDD (backend) criada.
 - Schema Prisma expandido com entidades de auth, jejum, lembretes, gamificação, planos, assinaturas, compras e LGPD.
-- Documentação inicial de endpoints e checklist de produção.
+- Base de autenticação backend com DTOs, controller, service, repository, hash de senha (Argon2), emissão de JWT e persistência de sessão.
+- Base de auth mobile (API + store + schema de login).
 
 ## Em andamento (próximo passo)
-1. Implementar **Auth backend completo** (register/login/refresh/logout/forgot/reset).
-2. Implementar **infra de segurança backend** (JWT, hash refresh, guard, throttling, helmet, CORS).
-3. Implementar **cliente mobile de autenticação** com formulários RHF+Zod.
+1. Implementar refresh token rotativo real e logout revogando sessão.
+2. Adicionar `/auth/forgot-password` e `/auth/reset-password`.
+3. Implementar `GET/PATCH/DELETE /me` e exportação de dados LGPD.
 
 ## Próximos marcos
-- M2 (40%): Auth + Me + Consent básico + telas login/cadastro/onboarding LGPD.
-- M3 (60%): Fluxo de jejum completo + pontuação + lembretes horários.
-- M4 (80%): Paywall RevenueCat + sincronização de assinatura + ads gating.
-- M5 (100%): Testes e2e/hook/component + hardening + documentação final produção.
+- M2 (45%): Auth completo + Me + consentimento básico.
+- M3 (65%): Fluxo de jejum completo + pontuação + lembretes horários.
+- M4 (85%): Paywall RevenueCat + sincronização assinatura + ads gating.
+- M5 (100%): Testes, hardening de segurança, observabilidade e documentação final.
