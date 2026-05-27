@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum FastStatus {
+  ACTIVE
+  PAUSED
+  FINISHED
+  CANCELLED
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  passwordHash  String   @map("password_hash")
+  role          UserRole @default(USER)
+  timezone      String   @default("UTC")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  sessions      AuthSession[]
+  fastingProtocols FastingProtocol[]
+  fastingSessions FastingSession[]
+}
+
+model AuthSession {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  refreshTokenHash String   @map("refresh_token_hash")
+  userAgent        String?  @map("user_agent")
+  ipAddress        String?  @map("ip_address")
+  expiresAt        DateTime @map("expires_at")
+  revokedAt        DateTime? @map("revoked_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FastingProtocol {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  name              String
+  fastingHours      Int      @map("fasting_hours")
+  eatingWindowHours Int      @map("eating_window_hours")
+  isDefault         Boolean  @default(false) @map("is_default")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions FastingSession[]
+}
+
+model FastingSession {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  protocolId    String?   @map("protocol_id")
+  startAt       DateTime  @map("start_at")
+  expectedEndAt DateTime  @map("expected_end_at")
+  endedAt       DateTime? @map("ended_at")
+  status        FastStatus
+  mood          String?
+  notes         String?
+  totalHours    Int       @default(0) @map("total_hours")
+  pointsEarned  Int       @default(0) @map("points_earned")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  protocol FastingProtocol? @relation(fields: [protocolId], references: [id], onDelete: SetNull)
+}
