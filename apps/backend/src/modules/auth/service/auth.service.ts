@@ -5,6 +5,9 @@ import { RegisterDto } from '../dto/register.dto';
 import { PasswordService } from '../../../shared/crypto/password.service';
 import { JwtTokenService } from '../../../shared/auth/jwt-token.service';
 import { AuthRepository } from '../repository/auth.repository';
+import { RefreshDto } from '../dto/refresh.dto';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
+import { ResetPasswordDto } from '../dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -41,6 +44,7 @@ export class AuthService {
 
     const refreshTokenHash = await this.passwordService.hash(refreshToken);
     await this.authRepository.createSession({
+      id: sessionId,
       userId: user.id,
       refreshTokenHash,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -49,11 +53,39 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async refresh() {
-    return { message: 'TODO: validar refresh token rotativo' };
+  async refresh(payload: RefreshDto) {
+    const decoded = await this.jwtTokenService.verifyRefreshToken(payload.refreshToken);
+    const session = await this.authRepository.findSessionById(decoded.sessionId);
+
+    if (!session || session.revokedAt || session.expiresAt < new Date()) {
+      throw new UnauthorizedException('Sessão inválida ou expirada.');
+    }
+
+    const validRefresh = await this.passwordService.verify(session.refreshTokenHash, payload.refreshToken);
+    if (!validRefresh) throw new UnauthorizedException('Refresh token inválido.');
+
+    const accessToken = await this.jwtTokenService.signAccessToken({ sub: decoded.sub, role: 'USER' });
+    const newRefreshToken = await this.jwtTokenService.signRefreshToken({ sub: decoded.sub, sessionId: session.id });
+    const newRefreshHash = await this.passwordService.hash(newRefreshToken);
+
+    await this.authRepository.updateSessionToken(session.id, newRefreshHash, new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
+
+    return { accessToken, refreshToken: newRefreshToken };
   }
 
-  async logout() {
+  async logout(payload: RefreshDto) {
+    const decoded = await this.jwtTokenService.verifyRefreshToken(payload.refreshToken);
+    await this.authRepository.revokeSession(decoded.sessionId);
     return { success: true };
+  }
+
+  async forgotPassword(payload: ForgotPasswordDto) {
+    const user = await this.authRepository.findUserByEmail(payload.email.toLowerCase());
+    if (!user) return { success: true };
+    return { success: true, resetToken: `dev-reset-${user.id}` };
+  }
+
+  async resetPassword(_payload: ResetPasswordDto) {
+    return { success: true, message: 'TODO: persistir token de reset com expiração e invalidar uso.' };
   }
 }

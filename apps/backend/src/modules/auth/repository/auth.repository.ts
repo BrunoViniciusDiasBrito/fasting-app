@@ -13,7 +13,22 @@ export class AuthRepository {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  createSession(input: { userId: string; refreshTokenHash: string; expiresAt: Date }) {
+  findSessionById(id: string) {
+    return this.prisma.authSession.findUnique({ where: { id } });
+  }
+
+  createSession(input: { id: string; userId: string; refreshTokenHash: string; expiresAt: Date }) {
     return this.prisma.authSession.create({ data: input });
+  }
+
+  revokeSession(id: string) {
+    return this.prisma.authSession.update({
+      where: { id },
+      data: { revokedAt: new Date() },
+    });
+  }
+
+  updateSessionToken(id: string, refreshTokenHash: string, expiresAt: Date) {
+    return this.prisma.authSession.update({ where: { id }, data: { refreshTokenHash, expiresAt } });
   }
 }
