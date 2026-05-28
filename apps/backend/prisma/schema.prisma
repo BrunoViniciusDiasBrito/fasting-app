@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum UserRole {
@@ -157,13 +156,13 @@ model Reminder {
 }
 
 model GamificationProfile {
-  id           String   @id @default(uuid())
-  userId       String   @unique @map("user_id")
-  totalPoints  Int      @default(0) @map("total_points")
-  currentLevel String   @default("Iniciante") @map("current_level")
-  currentStreak Int     @default(0) @map("current_streak")
-  bestStreak   Int      @default(0) @map("best_streak")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(uuid())
+  userId        String   @unique @map("user_id")
+  totalPoints   Int      @default(0) @map("total_points")
+  currentLevel  String   @default("Iniciante") @map("current_level")
+  currentStreak Int      @default(0) @map("current_streak")
+  bestStreak    Int      @default(0) @map("best_streak")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -181,13 +180,13 @@ model InstructionContent {
 }
 
 model Plan {
-  id          String          @id @default(uuid())
-  code        String          @unique
-  name        String
-  price       Decimal         @db.Decimal(10, 2)
-  billingType PlanBillingType @map("billing_type")
-  adsEnabled  Boolean         @default(true) @map("ads_enabled")
-  featuresJson Json           @map("features_json")
+  id           String          @id @default(uuid())
+  code         String          @unique
+  name         String
+  price        Decimal         @db.Decimal(10, 2)
+  billingType  PlanBillingType @map("billing_type")
+  adsEnabled   Boolean         @default(true) @map("ads_enabled")
+  featuresJson Json            @map("features_json")
 
   subscriptions Subscription[]
 }
@@ -226,15 +225,15 @@ model Purchase {
 }
 
 model ConsentRecord {
-  id          String    @id @default(uuid())
-  userId      String    @map("user_id")
+  id          String      @id @default(uuid())
+  userId      String      @map("user_id")
   consentType ConsentType @map("consent_type")
   version     String
   accepted    Boolean
-  acceptedAt  DateTime? @map("accepted_at")
-  revokedAt   DateTime? @map("revoked_at")
-  ipAddress   String?   @map("ip_address")
-  userAgent   String?   @map("user_agent")
+  acceptedAt  DateTime?   @map("accepted_at")
+  revokedAt   DateTime?   @map("revoked_at")
+  ipAddress   String?     @map("ip_address")
+  userAgent   String?     @map("user_agent")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
