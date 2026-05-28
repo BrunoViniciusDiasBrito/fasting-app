@@ -8,6 +8,7 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
-    "setup": "pnpm --filter @fastflow/backend prisma:generate"
+    "setup": "pnpm --filter @fastflow/backend prisma:generate",
+    "setup:electron": "node .\\node_modules\\.pnpm\\electron@33.2.1\\node_modules\\electron\\install.js "
   }
 }
