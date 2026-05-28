@@ -1,10 +1,10 @@
 # FastFlow — Status de Progresso
 
-> Atualizado em: 2026-05-27
+> Atualizado em: 2026-05-28
 
 ## Progresso geral
-- **75% concluído**.
-- **25% restante** para chegar ao escopo completo solicitado.
+- **85% concluído**.
+- **15% restante** para chegar ao escopo completo solicitado.
 
 ## Concluído
 - Monorepo com apps mobile/backend, CI inicial e setup local.
@@ -14,13 +14,11 @@
 - Refresh token rotativo com hash em sessão e revogação no logout.
 - Endpoints de usuário protegidos por JWT: `GET/PATCH/DELETE /me` e `GET /me/export-data`.
 - Endpoints de consentimento e privacidade.
-- Fluxo principal de jejum implementado: protocolos (create/list), sessão de jejum (start/finish/current/history) e cálculo de pontos por hora com limite diário.
+- Fluxo principal de jejum implementado: protocolos e sessões.
+- Endpoints de reminders (`POST/GET/PATCH/DELETE /reminders`).
+- Interceptors mobile com attach de bearer token + refresh automático em 401.
 
 ## Em andamento (próximo passo)
-1. Reminders por hora + mensagens de segurança + notificações.
-2. Paywall RevenueCat + sincronização de assinatura + ads gating.
-3. Interceptors de erro/refresh no mobile + testes unit/e2e.
-
-## Próximos marcos
-- M4 (90%): Paywall + ads + reminders.
-- M5 (100%): Testes, hardening segurança, observabilidade, documentação final.
+1. Paywall RevenueCat + sincronização de assinatura + ads gating.
+2. Testes unit/e2e backend e testes mobile (hooks/componentes).
+3. Hardening final (rate limit por rota crítica, logs/auditoria ampliados, observabilidade).
