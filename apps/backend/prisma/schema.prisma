@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum FastStatus {
+  ACTIVE
+  PAUSED
+  FINISHED
+  CANCELLED
+}
+
+enum ReminderType {
+  HOURLY_FASTING
+  SAFETY
+  EATING_WINDOW_END
+  BREAK_FAST
+}
+
+enum PlanBillingType {
+  FREE
+  ONE_TIME
+  MONTHLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  CANCELED
+  EXPIRED
+  PAST_DUE
+}
+
+enum PurchaseType {
+  REMOVE_ADS
+  SUBSCRIPTION
+}
+
+enum PurchaseStatus {
+  COMPLETED
+  CANCELED
+  REFUNDED
+  PENDING
+}
+
+enum ConsentType {
+  TERMS
+  PRIVACY
+  NOTIFICATIONS
+  MARKETING
+  ANALYTICS
+}
+
+enum PrivacyRequestType {
+  EXPORT
+  DELETE_ACCOUNT
+}
+
+enum PrivacyRequestStatus {
+  REQUESTED
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}
+
+model User {
+  id               String    @id @default(uuid())
+  name             String
+  email            String    @unique
+  passwordHash     String    @map("password_hash")
+  role             UserRole  @default(USER)
+  timezone         String    @default("UTC")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  deletedAt        DateTime? @map("deleted_at")
+
+  sessions         AuthSession[]
+  fastingProtocols FastingProtocol[]
+  fastingSessions  FastingSession[]
+  reminders        Reminder[]
+  gamification     GamificationProfile?
+  subscriptions    Subscription[]
+  purchases        Purchase[]
+  consents         ConsentRecord[]
+  privacyRequests  PrivacyRequest[]
+  auditLogs        AuditLog[]
+}
+
+model AuthSession {
+  id               String    @id @default(uuid())
+  userId           String    @map("user_id")
+  refreshTokenHash String    @map("refresh_token_hash")
+  userAgent        String?   @map("user_agent")
+  ipAddress        String?   @map("ip_address")
+  expiresAt        DateTime  @map("expires_at")
+  revokedAt        DateTime? @map("revoked_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FastingProtocol {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  name              String
+  fastingHours      Int      @map("fasting_hours")
+  eatingWindowHours Int      @map("eating_window_hours")
+  isDefault         Boolean  @default(false) @map("is_default")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions FastingSession[]
+}
+
+model FastingSession {
+  id            String     @id @default(uuid())
+  userId        String     @map("user_id")
+  protocolId    String?    @map("protocol_id")
+  startAt       DateTime   @map("start_at")
+  expectedEndAt DateTime   @map("expected_end_at")
+  endedAt       DateTime?  @map("ended_at")
+  status        FastStatus
+  mood          String?
+  notes         String?
+  totalHours    Int        @default(0) @map("total_hours")
+  pointsEarned  Int        @default(0) @map("points_earned")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  protocol FastingProtocol? @relation(fields: [protocolId], references: [id], onDelete: SetNull)
+}
+
+model Reminder {
+  id             String       @id @default(uuid())
+  userId         String       @map("user_id")
+  type           ReminderType
+  title          String
+  message        String
+  scheduledAt    DateTime     @map("scheduled_at")
+  recurrenceRule String?      @map("recurrence_rule")
+  enabled        Boolean      @default(true)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model GamificationProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique @map("user_id")
+  totalPoints   Int      @default(0) @map("total_points")
+  currentLevel  String   @default("Iniciante") @map("current_level")
+  currentStreak Int      @default(0) @map("current_streak")
+  bestStreak    Int      @default(0) @map("best_streak")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model InstructionContent {
+  id             String   @id @default(uuid())
+  slug           String   @unique
+  title          String
+  category       String
+  content        String
+  scientificNote String?  @map("scientific_note")
+  isPremium      Boolean  @default(false) @map("is_premium")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+}
+
+model Plan {
+  id           String          @id @default(uuid())
+  code         String          @unique
+  name         String
+  price        Decimal         @db.Decimal(10, 2)
+  billingType  PlanBillingType @map("billing_type")
+  adsEnabled   Boolean         @default(true) @map("ads_enabled")
+  featuresJson Json            @map("features_json")
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                    String             @id @default(uuid())
+  userId                String             @map("user_id")
+  planId                String             @map("plan_id")
+  provider              String
+  providerCustomerId    String             @map("provider_customer_id")
+  providerEntitlementId String?            @map("provider_entitlement_id")
+  status                SubscriptionStatus
+  currentPeriodStart    DateTime?          @map("current_period_start")
+  currentPeriodEnd      DateTime?          @map("current_period_end")
+  cancelAtPeriodEnd     Boolean            @default(false) @map("cancel_at_period_end")
+  lastSyncedAt          DateTime?          @map("last_synced_at")
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+}
+
+model Purchase {
+  id            String         @id @default(uuid())
+  userId        String         @map("user_id")
+  provider      String
+  productId     String         @map("product_id")
+  transactionId String         @unique @map("transaction_id")
+  type          PurchaseType
+  status        PurchaseStatus
+  purchasedAt   DateTime       @map("purchased_at")
+  createdAt     DateTime       @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ConsentRecord {
+  id          String      @id @default(uuid())
+  userId      String      @map("user_id")
+  consentType ConsentType @map("consent_type")
+  version     String
+  accepted    Boolean
+  acceptedAt  DateTime?   @map("accepted_at")
+  revokedAt   DateTime?   @map("revoked_at")
+  ipAddress   String?     @map("ip_address")
+  userAgent   String?     @map("user_agent")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PrivacyRequest {
+  id          String               @id @default(uuid())
+  userId      String               @map("user_id")
+  type        PrivacyRequestType
+  status      PrivacyRequestStatus
+  requestedAt DateTime             @default(now()) @map("requested_at")
+  completedAt DateTime?            @map("completed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?  @map("user_id")
+  action       String
+  entity       String
+  entityId     String?  @map("entity_id")
+  metadataJson Json?    @map("metadata_json")
+  ipAddress    String?  @map("ip_address")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
