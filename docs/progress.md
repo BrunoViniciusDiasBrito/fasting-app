@@ -3,8 +3,8 @@
 > Atualizado em: 2026-05-27
 
 ## Progresso geral
-- **60% concluído**.
-- **40% restante** para chegar ao escopo completo solicitado.
+- **75% concluído**.
+- **25% restante** para chegar ao escopo completo solicitado.
 
 ## Concluído
 - Monorepo com apps mobile/backend, CI inicial e setup local.
@@ -13,14 +13,14 @@
 - Auth backend com register/login/refresh/logout/forgot/reset (base funcional).
 - Refresh token rotativo com hash em sessão e revogação no logout.
 - Endpoints de usuário protegidos por JWT: `GET/PATCH/DELETE /me` e `GET /me/export-data`.
-- Endpoints de consentimento e privacidade: `GET/POST /privacy/consents`, `PATCH /privacy/consents/:id/revoke`, `POST /privacy/requests/export`, `POST /privacy/requests/delete-account`.
-- Base de auth mobile (API + store + schema de login).
+- Endpoints de consentimento e privacidade.
+- Fluxo principal de jejum implementado: protocolos (create/list), sessão de jejum (start/finish/current/history) e cálculo de pontos por hora com limite diário.
 
 ## Em andamento (próximo passo)
-1. Fluxo completo de jejum (start/finish/current/history) + pontuação.
-2. Reminders por hora + mensagens de segurança.
-3. Interceptors de erro e refresh token no mobile com TanStack Query retry strategy.
+1. Reminders por hora + mensagens de segurança + notificações.
+2. Paywall RevenueCat + sincronização de assinatura + ads gating.
+3. Interceptors de erro/refresh no mobile + testes unit/e2e.
 
 ## Próximos marcos
-- M4 (80%): Paywall RevenueCat + sincronização assinatura + ads gating.
-- M5 (100%): Testes, hardening de segurança, observabilidade e documentação final.
+- M4 (90%): Paywall + ads + reminders.
+- M5 (100%): Testes, hardening segurança, observabilidade, documentação final.
