@@ -10,3 +10,5 @@ apps/mobile/.expo
 apps/mobile/dist
 apps/backend/dist
 apps/backend/prisma/dev.db
+
+apps/backend/src/generated/prisma
