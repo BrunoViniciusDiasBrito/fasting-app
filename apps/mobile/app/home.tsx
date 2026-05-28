@@ -5,6 +5,7 @@ import { Button, Card, Chip, ProgressBar, Text, useTheme } from 'react-native-pa
 import { fetchAdsStatus } from '@/src/features/ads/api/ads-api';
 import { fetchCurrentFast, fetchFastHistory, finishFast, startFast } from '@/src/features/fasting/api/fasting-api';
 import { fetchSubscriptionStatus } from '@/src/features/subscription/api/subscription-api';
+import { APP_BRAND, APP_ROUTES, DEFAULT_FASTING_PROTOCOL } from '@/src/shared/config/app-content';
 import { MetricCard } from '@/src/shared/ui/MetricCard';
 import { Screen } from '@/src/shared/ui/Screen';
 
@@ -29,7 +30,7 @@ export default function HomeScreen() {
     queryClient.invalidateQueries({ queryKey: ['fasting'] });
   };
 
-  const startMutation = useMutation({ mutationFn: () => startFast(16), onSuccess: refreshFasting });
+  const startMutation = useMutation({ mutationFn: () => startFast(DEFAULT_FASTING_PROTOCOL.fastingHours), onSuccess: refreshFasting });
   const finishMutation = useMutation({
     mutationFn: () => finishFast(currentFast.data?.id ?? ''),
     onSuccess: refreshFasting,
@@ -41,11 +42,11 @@ export default function HomeScreen() {
   const levelProgress = Math.min(points / 500, 1);
 
   return (
-    <Screen title="FastFlow" subtitle="Seu painel de foco, segurança e consistência no jejum intermitente.">
+    <Screen title={APP_BRAND.name} subtitle="Seu painel de foco, segurança e consistência no jejum intermitente.">
       <Card mode="contained" style={styles.hero}>
         <Card.Content style={styles.cardGap}>
           <View style={styles.rowBetween}>
-            <Text variant="titleLarge" style={styles.strong}>Jejum 16:8</Text>
+            <Text variant="titleLarge" style={styles.strong}>{DEFAULT_FASTING_PROTOCOL.label}</Text>
             <Chip compact>{active ? 'Ativo' : 'Pronto'}</Chip>
           </View>
           <Text variant="displaySmall" style={{ color: theme.colors.primary }}>{formatRemaining(currentFast.data?.expectedEndAt)}</Text>
@@ -84,8 +85,11 @@ export default function HomeScreen() {
       </Card>
 
       <View style={styles.actions}>
-        <Link href="/tips" asChild><Button mode="contained-tonal">Dicas</Button></Link>
-        <Link href="/settings" asChild><Button mode="contained-tonal">Configurações</Button></Link>
+        {APP_ROUTES.map((route) => (
+          <Link key={route.href} href={route.href} asChild>
+            <Button mode="contained-tonal" icon={route.icon}>{route.label}</Button>
+          </Link>
+        ))}
       </View>
     </Screen>
   );
