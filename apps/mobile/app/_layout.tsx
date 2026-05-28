@@ -6,12 +6,14 @@ export default function RootLayout() {
     <AppProviders>
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: '#07111F' },
-          headerTintColor: '#E2E8F0',
-          headerTitleStyle: { fontWeight: '700' },
+          headerShown: false,
           contentStyle: { backgroundColor: '#07111F' },
         }}
-      />
+      >
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="+not-found" />
+      </Stack>
     </AppProviders>
   );
 }
