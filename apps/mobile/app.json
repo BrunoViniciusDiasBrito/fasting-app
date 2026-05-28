@@ -13,9 +13,12 @@
     "android": {
       "package": "com.fastflow.app"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "newArchEnabled": false
   }
 }

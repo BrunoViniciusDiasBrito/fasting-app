@@ -1,9 +1,15 @@
-import { IsBoolean, IsISO8601, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsBoolean, IsEnum, IsISO8601, IsOptional, IsString, MaxLength } from 'class-validator';
+
+export enum ReminderTypeDto {
+  HOURLY_FASTING = 'HOURLY_FASTING',
+  SAFETY = 'SAFETY',
+  EATING_WINDOW_END = 'EATING_WINDOW_END',
+  BREAK_FAST = 'BREAK_FAST',
+}
 
 export class CreateReminderDto {
-  @IsString()
-  @MaxLength(50)
-  type!: string;
+  @IsEnum(ReminderTypeDto)
+  type!: ReminderTypeDto;
 
   @IsString()
   @MaxLength(120)

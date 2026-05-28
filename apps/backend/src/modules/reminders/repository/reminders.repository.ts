@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import type { ReminderType } from '../../../generated/prisma/enums';
 import { PrismaService } from '../../../shared/database/prisma.service';
 
 @Injectable()
 export class RemindersRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(userId: string, data: { type: string; title: string; message: string; scheduledAt: Date; recurrenceRule?: string; enabled: boolean }) {
+  create(
+    userId: string,
+    data: { type: ReminderType; title: string; message: string; scheduledAt: Date; recurrenceRule?: string; enabled: boolean },
+  ) {
     return this.prisma.reminder.create({ data: { userId, ...data } });
   }
 

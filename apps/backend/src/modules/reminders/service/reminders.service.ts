@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { ReminderType } from '../../../generated/prisma/enums';
 import { CreateReminderDto } from '../dto/create-reminder.dto';
 import { UpdateReminderDto } from '../dto/update-reminder.dto';
 import { RemindersRepository } from '../repository/reminders.repository';
@@ -10,6 +11,7 @@ export class RemindersService {
   create(userId: string, dto: CreateReminderDto) {
     return this.remindersRepository.create(userId, {
       ...dto,
+      type: dto.type as ReminderType,
       scheduledAt: new Date(dto.scheduledAt),
     });
   }
