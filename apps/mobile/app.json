@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "FastFlow",
+    "slug": "fastflow",
+    "scheme": "fastflow",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.fastflow.app",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.fastflow.app"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "newArchEnabled": true
+  }
+}
