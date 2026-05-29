@@ -1,0 +1,14 @@
+node_modules
+.pnpm-store
+.env
+.env.*
+!.env.example
+coverage
+.DS_Store
+*.log
+apps/mobile/.expo
+apps/mobile/dist
+apps/backend/dist
+apps/backend/prisma/dev.db
+
+apps/backend/src/generated/prisma
