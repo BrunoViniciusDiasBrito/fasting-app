@@ -2,6 +2,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useTheme } from 'react-native-paper';
 
+export const unstable_settings = {
+  initialRouteName: 'home',
+};
+
 const TAB_ICON = {
   home: 'view-dashboard-outline',
   tips: 'lightbulb-on-outline',

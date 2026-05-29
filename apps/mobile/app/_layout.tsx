@@ -1,6 +1,10 @@
 import { Stack } from 'expo-router';
 import { AppProviders } from '@/src/providers/AppProviders';
 
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
+
 export default function RootLayout() {
   return (
     <AppProviders>
