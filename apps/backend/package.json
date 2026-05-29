@@ -14,7 +14,9 @@
     "lint": "eslint \"src/**/*.ts\"",
     "prisma:generate": "pnpm exec prisma generate",
     "prisma:migrate": "pnpm exec prisma migrate dev",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:push": "pnpm exec prisma db push",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "db:setup": "pnpm prisma:generate && pnpm prisma:push && pnpm prisma:seed"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -57,5 +59,21 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "testEnvironment": "node"
   }
 }
