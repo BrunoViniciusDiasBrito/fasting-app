@@ -10,5 +10,6 @@ import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
   imports: [JwtModule.register({})],
   controllers: [SubscriptionsController],
   providers: [SubscriptionsService, SubscriptionsRepository, PrismaService, JwtAuthGuard],
+  exports: [SubscriptionsService],
 })
 export class SubscriptionsModule {}
