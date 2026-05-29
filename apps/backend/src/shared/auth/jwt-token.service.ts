@@ -1,3 +1,4 @@
+import '../config/load-env';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
